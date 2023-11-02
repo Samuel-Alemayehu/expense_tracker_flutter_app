@@ -13,24 +13,27 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  final List<Expense> __expensesList = [
-    Expense(
-      title: "Flutter",
-      amount: 10.22,
-      date: DateTime.now(),
-      category: Categories.work,
-    ),
-    Expense(
-      title: "Cinema",
-      amount: 80.22,
-      date: DateTime.now(),
-      category: Categories.lesure,
-    ),
-  ];
+  final List<Expense> __expensesList = [];
+
+  void addNewExpense(Expense expenseData) {
+    setState(() {
+      __expensesList.add(
+        Expense(
+            title: expenseData.title,
+            amount: expenseData.amount,
+            date: expenseData.date,
+            category: expenseData.category),
+      );
+    });
+    Navigator.pop(context);
+  }
 
   void openAddModal() {
     showModalBottomSheet(
-        context: context, builder: (ctx) => const NewExpense());
+      context: context,
+      builder: (ctx) => NewExpense(addNewExpense),
+      isScrollControlled: true,
+    );
   }
 
   @override
