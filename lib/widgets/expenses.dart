@@ -28,6 +28,27 @@ class _ExpensesState extends State<Expenses> {
     Navigator.pop(context);
   }
 
+  void removeExpense(Expense expenseData) {
+    final expenseIndex = __expensesList.indexOf(expenseData);
+    setState(() {
+      __expensesList.remove(expenseData);
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text("Expense removed"),
+      duration: const Duration(seconds: 3),
+      action: SnackBarAction(
+          label: "Undo",
+          onPressed: () {
+            setState(
+              () {
+                __expensesList.insert(expenseIndex, expenseData);
+              },
+            );
+          }),
+    ));
+  }
+
   void openAddModal() {
     showModalBottomSheet(
       context: context,
@@ -38,6 +59,15 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(context) {
+    Widget main = const Center(
+      child: Text("No expense found"),
+    );
+    if (__expensesList.isNotEmpty) {
+      main = ExpensesList(
+        expenses: __expensesList,
+        removeExpense: removeExpense,
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -50,12 +80,14 @@ class _ExpensesState extends State<Expenses> {
           IconButton(onPressed: openAddModal, icon: const Icon(Icons.add))
         ],
       ),
-      body: Column(children: [
-        const Text("Charts"),
-        Expanded(
-          child: ExpensesList(expenses: __expensesList),
-        ),
-      ]),
+      body: Column(
+        children: [
+          const Text("Charts"),
+          Expanded(
+            child: main,
+          ),
+        ],
+      ),
     );
   }
 }
